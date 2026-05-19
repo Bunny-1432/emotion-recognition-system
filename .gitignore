@@ -1,0 +1,21 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.DS_Store
+
+# Data and Models
+data/
+*.pt
+*.pth
+confusion_matrix.png
+
+# Node modules
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
