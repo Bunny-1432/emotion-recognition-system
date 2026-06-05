@@ -51,7 +51,16 @@ def evaluate_model():
     target_names = list(EMOTION_MAP.values())
     
     print("\nClassification Report:")
-    print(classification_report(all_labels, all_preds, target_names=target_names, zero_division=0))
+    report_text = classification_report(all_labels, all_preds, target_names=target_names, zero_division=0)
+    print(report_text)
+    
+    # Save metrics to JSON
+    import json
+    report_dict = classification_report(all_labels, all_preds, target_names=target_names, zero_division=0, output_dict=True)
+    metrics_path = Path(__file__).parent.parent / "evaluation_metrics.json"
+    with open(metrics_path, 'w') as f:
+        json.dump(report_dict, f, indent=4)
+    print(f"Saved metrics to {metrics_path}")
     
     # Save confusion matrix
     cm = confusion_matrix(all_labels, all_preds)

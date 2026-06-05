@@ -54,13 +54,19 @@ An end-to-end deep learning system designed to classify human emotions from spee
    ```
 4. Open your browser and navigate to `http://localhost:3000`.
 
-## Model Evaluation
+## Model Evaluation & Verification
 
 You can evaluate the trained model on the held-out test set by running:
 ```bash
 python ml/evaluate.py
 ```
-This script will output a classification report and save a `confusion_matrix.png` in the project root.
+This script comprehensively computes precision, recall, and F1-score across all emotion classes. It will output:
+- A classification report to the console.
+- A `evaluation_metrics.json` file containing all metrics.
+- A visual `confusion_matrix.png` saved in the project root.
+
+Additionally, to verify the robust feature extraction edge-cases (e.g., short or corrupted audio):
+- Use `python test_accuracy.py` to test the API directly against the test dataset.
 
 ## Adding Custom Datasets
 

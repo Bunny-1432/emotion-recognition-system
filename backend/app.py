@@ -56,10 +56,13 @@ async def predict_emotion(file: UploadFile = File(...)):
             f.write(await file.read())
             
         # Extract features
-        features = extract_features(str(temp_file), max_len=180)
+        try:
+            features = extract_features(str(temp_file), max_len=180)
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
         
         if features is None:
-            raise HTTPException(status_code=500, detail="Failed to extract features from audio.")
+            raise HTTPException(status_code=400, detail="Failed to extract acoustic features from the provided audio. The file might be corrupted or in an unsupported format.")
             
         # Run inference
         features_tensor = torch.FloatTensor(features).unsqueeze(0).to(device) # Add batch dimension

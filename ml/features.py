@@ -33,6 +33,18 @@ def extract_features(file_path, max_len=180, augment=False):
         # Load audio file
         audio, sample_rate = librosa.load(file_path, sr=22050)
         
+        # Edge case: Empty or extremely short audio
+        if len(audio) == 0:
+            raise ValueError("Audio file is empty.")
+        
+        # If audio is too short (less than 1 second), pad it with zeros
+        if len(audio) < sample_rate:
+            audio = np.pad(audio, (0, sample_rate - len(audio)), 'constant')
+            
+        # Apply pre-emphasis filter to amplify high frequencies (standard in speech processing)
+        # This helps in reducing the effect of noise and balancing the frequency spectrum
+        audio = librosa.effects.preemphasis(audio)
+        
         # Extract features
         mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
         
