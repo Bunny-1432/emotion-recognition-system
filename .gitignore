@@ -12,6 +12,9 @@ data/
 *.pth
 confusion_matrix.png
 
+# Temporary audio files created during inference
+backend/temp_audio_*.wav
+
 # Node modules
 frontend/node_modules/
 frontend/.next/

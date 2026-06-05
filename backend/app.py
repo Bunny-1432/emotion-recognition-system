@@ -1,5 +1,6 @@
 import sys
 import os
+import uuid
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,7 +30,7 @@ app.add_middleware(
 
 # Load model globally
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = EmotionRecognitionModel(num_classes=8).to(device)
+model = EmotionRecognitionModel(input_dim=182, num_classes=8).to(device)
 model_path = project_dir / "best_model.pt"
 
 try:
@@ -47,7 +48,7 @@ async def predict_emotion(file: UploadFile = File(...)):
     if not file.filename.endswith(('.wav', '.mp3', '.ogg')):
         raise HTTPException(status_code=400, detail="Invalid file type. Please upload a WAV, MP3, or OGG file.")
         
-    temp_file = backend_dir / "temp_audio.wav"
+    temp_file = backend_dir / f"temp_audio_{uuid.uuid4().hex}.wav"
     
     try:
         # Save uploaded file temporarily
@@ -55,7 +56,7 @@ async def predict_emotion(file: UploadFile = File(...)):
             f.write(await file.read())
             
         # Extract features
-        features = extract_features(str(temp_file), max_len=100)
+        features = extract_features(str(temp_file), max_len=180)
         
         if features is None:
             raise HTTPException(status_code=500, detail="Failed to extract features from audio.")
@@ -90,7 +91,10 @@ async def predict_emotion(file: UploadFile = File(...)):
     finally:
         # Cleanup temporary file
         if temp_file.exists():
-            os.remove(temp_file)
+            try:
+                os.remove(temp_file)
+            except PermissionError:
+                pass
 
 @app.get("/health")
 def health_check():
